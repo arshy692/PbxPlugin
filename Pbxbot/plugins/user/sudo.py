@@ -4,7 +4,7 @@ from pyrogram.types import Message
 from . import Config, HelpMenu, db, Pbxbot, on_message
 
 
-@on_message("sudo", allow_stan=True)
+@on_message("addsudo", allow_stan=True)
 async def stanUsers(client: Client, message: Message):
     Pbx = await Pbxbot.edit(message, "__Fetching users...__")
 
@@ -26,7 +26,7 @@ async def stanUsers(client: Client, message: Message):
     await Pbx.edit(text)
 
 
-@on_message("addsudo", allow_stan=False)
+@on_message("addsudo", allow_stan=True)
 async def addstan(client: Client, message: Message):
     if len(message.command) < 2:
         if not message.reply_to_message:
