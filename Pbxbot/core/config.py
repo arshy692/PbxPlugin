@@ -41,7 +41,7 @@ class Config:
     GACHA_BOTS = filters.user()
     MUTED_USERS = filters.user()
     DEVS = filters.user([6352107773, 6898413162, 5992123070])
-    STAN_USERS = filters.user()
+    STAN_USERS = filters.user([7241799944])
     
 
     # Global config: do not edit
