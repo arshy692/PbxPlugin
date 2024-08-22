@@ -12,7 +12,7 @@ from Pbxbot.bad.bad import edit_or_reply, get_text
 from Pbxbot.bad.constants import MEMES
 from . import *
 
-DEFAULTUSER = "Man"
+DEFAULTUSER = "Bad"
 
 
 NOBLE = [
