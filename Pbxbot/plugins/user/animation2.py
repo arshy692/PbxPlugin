@@ -14,7 +14,7 @@ from Pbxbot.bad.bad import edit_or_reply, get_text
 from Pbxbot.bad.constants import MEMES
 from . import *
 
-DEFAULTUSER = "Man"
+DEFAULTUSER = "Bad"
 
 @on_message("plain", allow_stan=True)
 async def hello_world(client: Client, message: Message):
@@ -249,3 +249,7 @@ async def gunid(client: Client, message: Message):
 "⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿\n"
 "⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿\n"
 )
+
+HelpMenu("animation2").add(
+    "soon.",
+).info("Away From Keyboard").done()
