@@ -1249,3 +1249,6 @@ async def hearts(client: Client, message: Message):
     await message.edit("Rooor Aahh Aahh Aahh")
 
 
+HelpMenu("animation").add(
+    "soon.",
+).info("Away From Keyboard").done()
