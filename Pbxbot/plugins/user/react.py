@@ -20,7 +20,7 @@ from . import *
 
 
 
-@on_message("@ll_PIKAA_ll", allow_stan=True)
+@on_message("Bad", allow_stan=True)
 async def handle_incoming_messages(client, message):
     reactions = ['👍','❤️','🔥','🥰','👏','😁','🤩','👌','🥱','😍','❤️‍🔥','💯','🤣','⚡️','😴','👀','🙈','🤝','🤗','🤪','💘','😘','😎']
     if not await react_to_message(client, message, random.choice(reactions)):
