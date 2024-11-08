@@ -10,7 +10,6 @@ git-python
 glitch_this
 googlesearch-python
 googletrans @ git+https://github.com/badmunda98/py-googletrans
-git+https://github.com/badmunda98/BadAPI
 heroku3
 httpx
 lottie
