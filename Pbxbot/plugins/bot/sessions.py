@@ -27,10 +27,11 @@ async def session_menu(_, message: Message):
 # New command to add session string manually
 @Pbxbot.bot.on_message(filters.command("add") & Config.AUTH_USERS & filters.private)
 async def add_session(_, message: Message):
-    session_string = message.text.split(" ", 1)[1]
-    if not session_string:
-        return await message.reply_text("**𝖤𝗋𝗋𝗈𝗋!** 𝖯𝗅𝖾𝖺𝗌𝖾 𝗉𝗋𝗈𝗏𝗂𝖽𝖾 𝖺 𝗏𝖺𝗅𝗂𝖽 𝗌𝖾𝗌𝗌𝗂𝗈𝗇 𝗌𝗍𝗋𝗂𝗇𝗀.")
-
+    parts = message.text.split(" ", 1)
+    if len(parts) < 2 or not parts[1]:
+        return await message.reply_text("**Error!** Please provide a valid session string.")
+    
+    session_string = parts[1]
     try:
         client = Client(
             name="Pbxbot 2.0",
@@ -44,11 +45,10 @@ async def add_session(_, message: Message):
         await db.update_session(user_id, session_string)
         await client.disconnect()
         await message.reply_text(
-            "**𝖲𝗎𝖼𝖼𝖾𝗌𝗌!** 𝖲𝖾𝗌𝗌𝗂𝗈𝗇 𝗌𝗍𝗋𝗂𝗇𝗀 𝖺𝖽𝖽𝖾𝖽 𝗍𝗈 𝖽𝖺𝗍𝖺𝖻𝖺𝗌𝖾."
+            "**Success!** Session string added to database."
         )
     except Exception as e:
-        await message.reply_text(f"**𝖤𝗋𝗋𝗈𝗋!** {e}")
-
+        await message.reply_text(f"**Error!** {e}")
 
 # Existing command to create a new session
 @Pbxbot.bot.on_message(filters.regex(r"ɴᴇᴡ 👑") & Config.AUTH_USERS & filters.private)
