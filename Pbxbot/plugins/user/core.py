@@ -3,14 +3,13 @@ import os
 import sys
 from pathlib import Path
 
-from pyrogram import Client
+from pyrogram import Client, filters
 from pyrogram.enums import MessagesFilter, ParseMode
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent
 
 from Pbxbot.core import ENV, Config, Symbols
 
 from . import HelpMenu, bot, db, handler, Pbxbot, on_message
-
 
 @on_message("help", allow_stan=True)
 async def help(client: Client, message: Message):
@@ -51,16 +50,49 @@ async def help(client: Client, message: Message):
 
 
 @on_message("repo", allow_stan=True)
-async def repo(_, message: Message):
-    REPO_TEXT = (
-        "__🍀 𝖱𝖾𝗉𝗈:__ [Github](https://github.com/Badhacker98/PBX_2.0/fork)\n\n"
-        "__🍀 Updates:__ @PBX_NETWORK\n"
-        "__🍀 Support:__ @ll_THE_BAD_BOT_ll\n\n"
-        "**By ©️ @ll_THE_BAD_BOT_ll**"
-    )
-    await Pbxbot.edit(message, REPO_TEXT, no_link_preview=True)
+async def repo(client: Client, message: Message):
+    Pbx = await Pbxbot.edit(message, "**Repo...**")
+    try:
+        result = await client.get_inline_bot_results(bot.me.username, "repo_menu")
+        await client.send_inline_bot_result(
+            message.chat.id,
+            result.query_id,
+            result.results[0].id,
+            True,
+        )
+        return await Pbx.delete()
+    except Exception as e:
+        await Pbxbot.error(Pbx, str(e), 20)
+        return
+        
 
+@bot.on_inline_query(filters.regex("repo_menu"))
+async def inline_repo(client: Client, inline_query):
+    buttons = [
+        [
+            InlineKeyboardButton("ʀᴇᴘᴏ", url="https://github.com/Badhacker98/PBX_2.0/fork")
 
+        ],
+        [
+            InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/HEROKUBIN_01"),
+            InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ", url="https://t.me/PBX_CHAT")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(buttons)
+    results = [
+        InlineQueryResultArticle(
+            id="repo",
+            title="Repository Information",
+            input_message_content=InputTextMessageContent(
+                "__📌 ʀᴇᴘᴏ:__",
+                disable_web_page_preview=True
+            ),
+            reply_markup=reply_markup,
+            thumb_url="https://files.catbox.moe/y3evsv.jpg"  # Add the URL to the photo here
+        )
+    ]
+    await inline_query.answer(results, cache_time=0)
+    
 @on_message("plinfo", allow_stan=True)
 async def plugin_info(_, message: Message):
     plugin = await Pbxbot.input(message)
@@ -318,4 +350,4 @@ HelpMenu("help").add(
     "Load the mentioned plugin.",
     "load alive",
     "This will load all the commands of that plugin to the bot that was previously unloaded permanently.",
-)
+    )
