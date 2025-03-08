@@ -11,8 +11,17 @@ from Pbxbot.functions.formatter import readable_time
 from Pbxbot.functions.images import generate_alive_image
 from Pbxbot.functions.templates import alive_template, ping_template
 
-from . import Config, HelpMenu, db, Pbxbot, on_message
+from . import Config, HelpMenu, db, Pbxbot, on_message, bot
 
+from pyrogram import Client, filters
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InlineQueryResultPhoto,
+    InlineQueryResultArticle,
+    InputTextMessageContent,
+    Message,
+)
 
 @on_message("alive", allow_stan=True)
 async def alive(client: Client, message: Message):
@@ -20,62 +29,109 @@ async def alive(client: Client, message: Message):
 
     img = await db.get_env(ENV.alive_pic)
     if not img:
-        if message.from_user.photo:
-            user_pfp = await client.download_media(message.from_user.photo.big_file_id)
-            del_path = True
-        else:
-            user_pfp = "./Pbxbot/resources/images/Pbxbot_logo.png"
-            del_path = False
-        img = [
-            generate_alive_image(
-                message.from_user.first_name, user_pfp, del_path, Config.FONT_PATH
-            )
-        ]
-    else:
-        img = img.split(" ")
+        img = "./Pbxbot/resources/images/Pbxbot_logo.png"  # Default image
 
-    img = random.choice(img)
     uptime = readable_time(time.time() - START_TIME)
-    caption = await alive_template(client.me.first_name, uptime)
-
-    if img.endswith(".mp4"):
-        await message.reply_video(img, caption=caption)
-    else:
-        await message.reply_photo(img, caption=caption)
-    await Pbx.delete()
+    caption = await alive_template(message.from_user.first_name, uptime)
 
     try:
-        os.remove(img)
-    except:
-        pass
+        result = await client.get_inline_bot_results(bot.me.username, "alive_menu")
+        await client.send_inline_bot_result(
+            message.chat.id,
+            result.query_id,
+            result.results[0].id,
+            True,
+        )
+        return await Pbx.delete()
+    except Exception as e:
+        await Pbxbot.error(Pbx, str(e), 20)
+        return
 
+@bot.on_inline_query(filters.regex("alive_menu"))
+async def inline_alive(client: Client, inline_query):
+    img = await db.get_env(ENV.alive_pic)
+    if not img:
+        img = "./Pbxbot/resources/images/Pbxbot_logo.png"  # Default image
+
+    uptime = readable_time(time.time() - START_TIME)
+    caption = await alive_template(inline_query.from_user.first_name, uptime)
+
+    buttons = [
+        [
+            InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ", url="https://t.me/PBX_CHAT"),
+            InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/HEROKUBIN_01"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(buttons)
+
+    results = [
+        InlineQueryResultPhoto(
+            photo_url=img,
+            thumb_url=img,
+            caption=caption,
+            reply_markup=reply_markup,
+        )
+    ]
+
+    await inline_query.answer(results, cache_time=0)
 
 @on_message("ping", allow_stan=True)
 async def ping(client: Client, message: Message):
     start_time = time.time()
     Pbx = await Pbxbot.edit(message, "`·.·★ ᴘʙx 2.0 ★·.·´")
+    
     uptime = readable_time(time.time() - START_TIME)
-    img = await db.get_env(ENV.ping_pic)
     end_time = time.time()
     speed = end_time - start_time
-    caption = await ping_template(round(speed, 3), uptime, client.me.mention)
-    if img:
-        PIC = "https://telegra.ph/file/14166208a7bf871cb0aca.jpg"
-        img = random.choice(img.split(" "))
-        if img.endswith(".mp4"):
-            await message.reply_video(
-                img,
-                caption=caption,
-            )
-        else:
-            await message.reply_photo(
-                img,
-                caption=caption,
-            )
+    
+    caption = await ping_template(round(speed, 3), uptime, message.from_user.mention)
+
+    try:
+        result = await client.get_inline_bot_results(bot.me.username, "ping_menu")
+        await client.send_inline_bot_result(
+            message.chat.id,
+            result.query_id,
+            result.results[0].id,
+            True,
+        )
+        return await Pbx.delete()
+    except Exception as e:
+        await Pbxbot.error(Pbx, str(e), 20)
         return
-    await Pbxbot.edit(Pbx, caption, no_link_preview=True)
 
+@bot.on_inline_query(filters.regex("ping_menu"))
+async def inline_ping(client: Client, inline_query):
+    img = await db.get_env(ENV.ping_pic)
+    if not img:
+        img = "https://telegra.ph/file/14166208a7bf871cb0aca.jpg"  # Default image
 
+    uptime = readable_time(time.time() - START_TIME)
+    
+    # Speed calculation ka seedha tareeka, bas inline query receive hone ka time le rahe hain
+    start_time = time.time()
+    speed = round(time.time() - start_time, 3)
+
+    caption = await ping_template(speed, uptime, inline_query.from_user.mention)
+
+    buttons = [
+        [
+            InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ", url="https://t.me/PBX_CHAT"),
+            InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/HEROKUBIN_01"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(buttons)
+
+    results = [
+        InlineQueryResultPhoto(
+            photo_url=img,
+            thumb_url=img,
+            caption=caption,
+            reply_markup=reply_markup,
+        )
+    ]
+
+    await inline_query.answer(results, cache_time=0)
+    
 @on_message("history", allow_stan=True)
 async def history(client: Client, message: Message):
     if not message.reply_to_message:
@@ -133,3 +189,4 @@ HelpMenu("bot").add(
 ).info(
     "Alive Menu"
 ).done()
+    
