@@ -6,7 +6,7 @@ cinemagoer
 edge-tts
 emoji
 geopy
-git-python
+gitpython
 glitch_this
 googlesearch-python
 googletrans @ git+https://github.com/badmunda98/py-googletrans
